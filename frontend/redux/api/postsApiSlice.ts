@@ -48,6 +48,24 @@ const EmployeesApiSlice = apiSlice.injectEndpoints({
             },
             invalidatesTags:['profile']
         }),
+
+        getNotifications: builder.query({
+            query:({size}:{size?:string|undefined})=>{                
+                return ({
+                    url:`posts/notifications/`,
+                    method:'GET',
+                    params:{size}
+                })
+            }
+        }),
+        readNotifications: builder.mutation({
+            query:()=>{                
+                return ({
+                    url:`posts/notifications/read/`,
+                    method:'GET',
+                })
+            }
+        }),
     })
          
 }) 
@@ -57,5 +75,7 @@ export const {
     useSearchQuery,
     useProfileQuery,
     useFollowMutation,
-    useUnfollowMutation
+    useUnfollowMutation,
+    useGetNotificationsQuery,
+    useReadNotificationsMutation
 } = EmployeesApiSlice

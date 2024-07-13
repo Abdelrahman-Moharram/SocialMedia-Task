@@ -20,7 +20,7 @@ interface Props{
 const PostCard = ({card}:Props) => {
     const created_date = () => {
         const date = new Date(card.published_at)
-        return date.toDateString()
+        return date.toUTCString()
     }
     
   return (
@@ -47,7 +47,7 @@ const PostCard = ({card}:Props) => {
         </div>
 
         {/* Description */}
-        <p className='text-md text-black font-semibold p-3'>
+        <p className='text-md text-black font-semibold py-3 px-5'>
             {card.description}
         </p>
 

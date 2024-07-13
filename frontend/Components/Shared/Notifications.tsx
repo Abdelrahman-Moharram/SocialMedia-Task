@@ -1,44 +1,79 @@
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
-import React from 'react'
-import { GrNotification } from 'react-icons/gr'
+import { useGetNotificationsQuery, useReadNotificationsMutation } from '@/redux/api/postsApiSlice';
+import { useAppSelector } from '@/redux/hooks';
+import React, { useState } from 'react'
+import { ImFileEmpty } from 'react-icons/im';
+import NotificationDropdownItem from './NotificationDropdownItem';
+import { GrNotification } from 'react-icons/gr';
 
+interface notificationType{
+  id: string;
+  message: string;
+  is_read: boolean;
+  date: Date;
+  receiver: string;
+  sender: {
+    id:string,
+    username: string;
+    image: string
+  };
+  post: string
+}
 const Notifications = () => {
+  const [notificationToggler, setNotificationToggler] = useState(false)
+  const {id} = useAppSelector(state=>state.auth.user)
+  const [notification_count, setNotifications] = useState<number>(0)
+  const {data} = useGetNotificationsQuery({size:'10'}, {refetchOnFocus:true})
+  const notificationsSocket = new WebSocket(`ws://127.0.0.1:8000/ws/notify/${id}/`)
+  const [readNotifications] = useReadNotificationsMutation()
+  notificationsSocket.onopen = function(e){
+    console.log('ws connected');
+  
+  }
+  notificationsSocket.onclose = function (e) {
+    console.log('ws disconnected');
+    
+  };
+  notificationsSocket.onmessage = function (e) {        
+    setNotifications(notification_count + 1)
+  };
+  const handleReadNotification = () =>{
+    setNotificationToggler(!notificationToggler)
+    setNotifications(0)
+    readNotifications({})
+  }
   return (
-    <div>
-      
-        <Popover __demoMode>
-          <PopoverButton className="p-4 rounded-full bg-slate-100 hover:bg-slate-300">
-            <GrNotification />
-          </PopoverButton>
-          <PopoverPanel
-            transition
-            anchor="bottom"
-            className="divide-y divide-white/5 mt-3 rounded-xl bg-white text-sm/6 transition duration-200 ease-in-out [--anchor-gap:var(--spacing-5)] data-[closed]:-translate-y-1 data-[closed]:opacity-0"
-          >
-            <div className="p-3">
-              <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-black">Insights</p>
-                <p className="text-black/50">Measure actions your users take</p>
-              </a>
-              <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-black">Automations</p>
-                <p className="text-black/50">Create your own targeted content</p>
-              </a>
-              <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-black">Reports</p>
-                <p className="text-black/50">Keep track of your growth</p>
-              </a>
+    <>
+      <button 
+          onClick={handleReadNotification} 
+          className="relative rounded-full p-4 transition-all cursor-pointer bg-gray-100 hover:bg-gray-200"
+      >
+        {
+          notification_count ?
+            <span className='absolute -mr-2 -mt-1 top-0 right-0 px-[7px] bg-red-600 rounded-full text-white text-sm'>{notification_count}</span>
+          :null
+        }
+          <GrNotification />
+      </button>
+      {
+        notificationToggler?
+          <div className='absolute right-10 top-[60px] max-w-[40rem] bg-white rounded-md shadow-lg px-2 py-2 z-10 my-3 max-h-[70%] overflow-y-auto space-y-2'>
+          {
+            data && data?.notifications?.length?
+                data.notifications.map((notification:notificationType)=>(
+                    <NotificationDropdownItem notification={notification} key={notification.id} />
+                ))
+            :
+            <div className='py-3 px-20'>
+                <p className='text-lg font-bold flex gap-4 items-center'>
+                    <ImFileEmpty /> 
+                    No Notifications Available
+                </p>
             </div>
-            <div className="p-3">
-              <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-black">Documentation</p>
-                <p className="text-black/50">Start integrating products and tools</p>
-              </a>
-            </div>
-          </PopoverPanel>
-        </Popover>
-
-    </div>
+          }
+          </div>
+        :null
+      }
+    </>
   )
 }
 

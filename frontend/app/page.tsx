@@ -8,9 +8,9 @@ export default function Home() {
   const {data} = useGetPostsListQuery({}, {refetchOnMountOrArgChange:true, refetchOnFocus:true})
   return (
     <AuthenticatedOrRedirect>
-      <div className="grid grid-cols-3 pt-3">
+      <div className="grid grid-cols-4 pt-3">
         <div className=""></div>
-        <div className="">
+        <div className="col-span-2">
           <PostList 
             cards={data?.posts}
           />

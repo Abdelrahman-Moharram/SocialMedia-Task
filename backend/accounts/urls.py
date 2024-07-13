@@ -10,7 +10,7 @@ from .views import (
     search,
     profile,
     followuser,
-    unfollowuser
+    unfollowuser,
 )
 app_name='accounts'
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
 
     path('profile/<str:user_id>/follow', followuser, name='followuser'),
     path('profile/<str:user_id>/unfollow', unfollowuser, name='unfollowuser'),
+    
 ]
