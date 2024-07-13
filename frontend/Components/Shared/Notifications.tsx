@@ -22,7 +22,7 @@ const Notifications = () => {
   const [notificationToggler, setNotificationToggler] = useState(false)
   const {id} = useAppSelector(state=>state.auth.user)
   const [notification_count, setNotifications] = useState<number>(0)
-  const {data} = useGetNotificationsQuery({size:'10'}, {refetchOnFocus:true})
+  const {data} = useGetNotificationsQuery({size:'10'}, {refetchOnFocus:true, refetchOnMountOrArgChange:true, refetchOnReconnect:true})
   const notificationsSocket = new WebSocket(`ws://127.0.0.1:8000/ws/notify/${id}/`)
   const [readNotifications] = useReadNotificationsMutation()
   notificationsSocket.onopen = function(e){

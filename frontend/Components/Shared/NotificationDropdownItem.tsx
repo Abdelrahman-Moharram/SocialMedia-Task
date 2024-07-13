@@ -20,9 +20,10 @@ interface Props{
 }
 
 const NotificationDropdownItem = ({notification}:Props) => {
+    
     const created_date = () => {
         const date = new Date(notification.date)
-        return date.toDateString()
+        return date.toUTCString()
     }
   return (
     <Link href={`/posts/${notification.post}`} className={'max-w-[500px] flex items-center gap-2 hover:bg-gray-200 p-3 rounded-lg ' + (!notification.is_read?'bg-gray-100':null)}>

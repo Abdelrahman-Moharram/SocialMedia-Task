@@ -20,7 +20,7 @@ interface Props{
 const PostCard = ({card}:Props) => {
     const created_date = () => {
         const date = new Date(card.published_at)
-        return date.toUTCString()
+        return date.toDateString()
     }
     
   return (
